@@ -23,17 +23,18 @@ def start(job):
 
     if str(job["background"]) == "flax":
         set_compositing_switch('material',False)
-    else: 
+    elif str(job["background"]) == "wood": 
         set_compositing_switch('material',True) 
 
-    if job["lights"] == "on":
-        objects.hide_collection_from_render('lights-off')
-        set_compositing_switch('wood',True)
-        set_compositing_switch('flax',True)
-    else:
-        objects.hide_collection_from_render('lights-on')
-        set_compositing_switch('wood',False)
-        set_compositing_switch('flax',False)      
+    if str(job["background"]) != "interior":
+        if job["lights"] == "on":
+            objects.hide_collection_from_render('lights-off')
+            set_compositing_switch('wood',True)
+            set_compositing_switch('flax',True)
+        elif job["lights"] == "off":
+            objects.hide_collection_from_render('lights-on')
+            set_compositing_switch('wood',False)
+            set_compositing_switch('flax',False)      
 
 
     out.nodes['out2'].base_path = '//render/'+subfolder
@@ -45,8 +46,9 @@ def start(job):
         activate_camera('c.'+camera)
     
         out.nodes['out2'].file_slots[0].path = "{}_{}_{}_{}".format(subfolder,job["lights"], camera, 'color')
-        out.nodes['out2'].file_slots[1].path =   "{}_{}_{}_{}".format(subfolder,job["lights"], camera, 'white')
-        out.nodes['out2'].file_slots[2].path =  "{}_{}_{}_{}".format(subfolder,job["lights"], camera, 'alpha')
+        if str(job["background"]) != "interior":
+            out.nodes['out2'].file_slots[1].path =   "{}_{}_{}_{}".format(subfolder,job["lights"], camera, 'white')
+            out.nodes['out2'].file_slots[2].path =  "{}_{}_{}_{}".format(subfolder,job["lights"], camera, 'alpha')
 
         bpy.context.scene.render.filepath = "//render/render"+subfolder
 

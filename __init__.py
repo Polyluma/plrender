@@ -10,7 +10,7 @@ import objects
 import render
 import importlib
 importlib.reload(objects)
-#importlib.reload(render)
+importlib.reload(render)
 
 
 def run():
@@ -21,7 +21,7 @@ def run():
     # if job is not {} and None:
     print('BUILD') 
     objects.construct(job)
-    print('RENDER') 
+    print('RENDER2') 
     render.start(job)
 
 

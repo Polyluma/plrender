@@ -5,23 +5,24 @@ import os
 def construct(job):
     # print('CONSTRUCT LAMP')
     #global settings
+    shelf_path = job['shelf']
     light_state = job['lights']
     rotation = job['rotation']     
 
     for lamp in job['lamps']: 
         #1 import shade
-        append_shade(lamp,light_state)
+        append_shade(lamp,shelf_path,light_state)
         #2 import Hub
-        append_hub(lamp)
+        append_hub(lamp,shelf_path)
         #3 import Cap
-        append_cap(lamp)
+        append_cap(lamp,shelf_path)
         #4 import Cable
-        append_cable(lamp)
+        append_cable(lamp,shelf_path)
 
         #hide instance 
         hide_collection_from_render('build')
 
-def append_cable(lamp):
+def append_cable(lamp,shelf_path):
     set_active_layer(lamp['collection']) 
     # Import Shade
     # print(lamp['cable']) 
@@ -32,12 +33,12 @@ def append_cable(lamp):
     cable_blenderobject_name = "%s.%s" % (cable_id,cable_material) 
     #model, blenderobject_name, section, 
     try:
-        append_from_blendfile(cable_id,cable_blenderobject_name,cable_folder,'Collection')
+        append_from_blendfile(shelf_path,cable_id,cable_blenderobject_name,cable_folder,'Collection')
     except:
         print('no matching CABLE found: ' + cable_blenderobject_name)
 
 
-def append_cap(lamp):
+def append_cap(lamp,shelf_path):
     set_active_layer(lamp['collection']) 
     # Import Shade
     # print(lamp['cap']) 
@@ -48,11 +49,11 @@ def append_cap(lamp):
     cap_blenderobject_name = "%s.%s" % (cap_id,cap_material) 
     #model, blenderobject_name, section, 
     try:
-        append_from_blendfile(cap_id,cap_blenderobject_name,cap_folder,'Collection')
+        append_from_blendfile(shelf_path,cap_id,cap_blenderobject_name,cap_folder,'Collection')
     except:
         print('no matching CAP found: ' + cap_blenderobject_name)
 
-def append_hub(lamp):
+def append_hub(lamp,shelf_path):
     set_active_layer(lamp['collection']) 
     # Import Shade
     # print(lamp['hub']) 
@@ -63,11 +64,11 @@ def append_hub(lamp):
     hub_blenderobject_name = "%s.%s" % (hub_id,hub_material) 
     #model, blenderobject_name, section, 
     try:
-        append_from_blendfile(hub_id,hub_blenderobject_name,hub_folder,'Collection')
+        append_from_blendfile(shelf_path,hub_id,hub_blenderobject_name,hub_folder,'Collection')
     except:
         print('no matching HUB found: ' + hub_blenderobject_name)
 
-def append_shade(lamp,light_state):
+def append_shade(lamp,shelf_path,light_state):
 
     set_active_layer(lamp['collection']) 
     # Import Shade
@@ -79,21 +80,26 @@ def append_shade(lamp,light_state):
     shade_blenderobject_name = "%s.%s.%s" % (shelf_id,shade_material,light_state) 
     #model, blenderobject_name, section, 
     try:
-        append_from_blendfile(shelf_id,shade_blenderobject_name,shade_folder,'Collection')
+        append_from_blendfile(shelf_path,shelf_id,shade_blenderobject_name,shade_folder,'Collection')
     except:
         print('no matching SHADE found: ' + shade_blenderobject_name)
 
-def append_from_blendfile(shelf_id,import_key,shade_folder,section):
+def append_from_blendfile(shelf_path,shelf_id,import_key,shade_folder,section):
     # select lamp collection 
     filepath = os.path.dirname(os.path.abspath(__file__))
     path, file_name = os.path.split(filepath)
     blend_filename = shelf_id+".blend"
-    shades_folderpath = os.path.join(path, 'shelf/'+shade_folder)
+    shades_folderpath = os.path.join(shelf_path, shade_folder)
     blendfile = os.path.join(shades_folderpath, blend_filename)
     section   = "\\"+section+"\\"
     filepath  = blendfile + section + import_key
     directory = blendfile + section
     filename  = import_key
+
+    print('PATH    ++++++')
+    print(path)
+    print(shades_folderpath)
+
     try:
         # old_obj_list = bpy.data.objects[:]
         bpy.ops.wm.append(filepath=filepath,filename=filename,directory=directory, autoselect=True, active_collection=True,link=False)
